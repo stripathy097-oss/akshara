@@ -175,6 +175,18 @@
   }
   .lang-select-row button.active{ background:var(--ink); color:var(--leaf); border-color:var(--ink); }
 
+  .image-picker{
+    display:flex; align-items:center; justify-content:center;
+    border:1.5px dashed var(--ink-soft); border-radius:14px; padding:18px;
+    margin-bottom:14px; cursor:pointer; font-size:0.85rem; color:var(--ink-soft);
+    background:rgba(31,22,13,0.03); min-height:44px;
+  }
+  .image-picker:hover{ background:rgba(31,22,13,0.06); }
+  #imagePreviewWrap{ margin-bottom:16px; }
+  #imagePreview{ width:100%; max-height:260px; object-fit:cover; border-radius:14px; display:block; margin-bottom:8px; }
+  .entry-image{ width:100%; max-height:220px; object-fit:cover; border-radius:14px; margin-bottom:14px; display:block; }
+  .detail-image{ width:100%; max-height:340px; object-fit:cover; border-radius:16px; margin:14px 0 20px; display:block; }
+
   /* Detail view */
   .detail-top{ display:flex; align-items:center; gap:10px; margin-bottom:20px; }
   .detail h2{ font-family:'Cormorant Garamond', serif; font-size:2rem; margin:16px 0 6px; }
@@ -293,7 +305,17 @@
       </div>
       <input type="text" id="postTitleInput" placeholder="Title">
       <textarea id="postBodyInput" placeholder="Write what's on your mind..."></textarea>
-      <button class="btn-primary" id="publishBtn" style="width:100%;">Publish</button>
+
+      <label class="image-picker" id="imagePickerLabel">
+        <span id="imagePickerText">📷 Add a photo (optional)</span>
+        <input type="file" id="postImageInput" accept="image/*" style="display:none;">
+      </label>
+      <div id="imagePreviewWrap" class="hidden">
+        <img id="imagePreview" alt="Selected photo preview">
+        <button type="button" class="btn-ghost" id="removeImageBtn">✕ Remove photo</button>
+      </div>
+
+      <button class="btn-primary" id="publishBtn" style="width:100%; margin-top:6px;">Publish</button>
     </div>
 
     <!-- DETAIL VIEW -->
@@ -325,10 +347,13 @@
   <div class="toast" id="toast"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
-  const META_KEY = 'akshara-meta';
-  const POSTS_KEY = 'akshara-posts';
+  const SUPABASE_URL = 'https://trtkkgxpyiacmrzuqdwu.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_9uIL4F4C43nMQ9RUfNBVKg_PBuoe5Ok';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   let posts = [];
   let meta = { waNumber: "" };
   let filter = 'all';
@@ -375,14 +400,27 @@
     return d.innerHTML;
   }
 
+  // Reads and writes go to Supabase now, so every article is stored on the
+  // server and shows up for anyone who visits the site, on any device.
   async function loadAll(){
     try{
-      const m = await window.storage.get(META_KEY, false);
-      if(m && m.value) meta = JSON.parse(m.value);
+      const { data, error } = await db.from('site_meta').select('*').eq('id','main').single();
+      if(data && !error){
+        meta = {
+          waNumber: data.wa_number || '',
+          brandTitle: data.brand_title || '',
+          authorName: data.author_name || '',
+          tagline: data.tagline || '',
+          aboutText: data.about_text || ''
+        };
+      }
     }catch(e){}
+
     try{
-      const p = await window.storage.get(POSTS_KEY, false);
-      if(p && p.value) posts = JSON.parse(p.value);
+      const { data, error } = await db.from('posts').select('*').order('created_at', { ascending:false });
+      if(data && !error){
+        posts = data.map(r => ({ id:r.id, title:r.title, body:r.body, lang:r.lang, image:r.image, createdAt:r.created_at }));
+      }
     }catch(e){ posts = []; }
 
     $('waNumberInput').value = meta.waNumber || '';
@@ -391,13 +429,16 @@
   }
 
   async function saveMeta(){
-    try{ await window.storage.set(META_KEY, JSON.stringify(meta), false); }
-    catch(e){ showToast("Couldn't save settings"); }
+    try{
+      await db.from('site_meta').update({
+        wa_number: meta.waNumber || null,
+        brand_title: meta.brandTitle || null,
+        author_name: meta.authorName || null,
+        tagline: meta.tagline || null,
+        about_text: meta.aboutText || null
+      }).eq('id','main');
+    }catch(e){ showToast("Couldn't save settings"); }
     $('waFloat').href = waLink(meta.waNumber);
-  }
-  async function savePosts(){
-    try{ await window.storage.set(POSTS_KEY, JSON.stringify(posts), false); }
-    catch(e){ showToast("Couldn't save entry"); }
   }
 
   function renderList(){
@@ -421,6 +462,7 @@
           <span class="lang-tag ${isOr?'or':''}">${isOr?'ଓଡ଼ିଆ':'ENGLISH'}</span>
           <span>${formatDate(post.createdAt)}</span>
         </div>
+        ${post.image ? `<img class="entry-image" src="${post.image}" alt="">` : ''}
         <h2 class="${isOr?'lang-or':''}">${escapeHtml(post.title)}</h2>
         <p class="${isOr?'lang-or':''}">${escapeHtml(excerpt(post.body))}</p>
         <div class="entry-actions">
@@ -453,6 +495,7 @@
         <span>${formatDate(post.createdAt)}</span>
       </div>
       <h2 class="${isOr?'lang-or':''}">${escapeHtml(post.title)}</h2>
+      ${post.image ? `<img class="detail-image" src="${post.image}" alt="">` : ''}
       <p class="${isOr?'lang-or':''}">${escapeHtml(post.body)}</p>
       <a class="share-btn" href="${shareUrl(post)}" target="_blank" rel="noopener">
         <svg width="14" height="14" viewBox="0 0 32 32" fill="white"><path d="M16.001 3C9.101 3 3.5 8.6 3.5 15.5c0 2.43.71 4.69 1.93 6.6L3 29l7.09-2.37a12.44 12.44 0 0 0 5.9 1.5h.01c6.9 0 12.5-5.6 12.5-12.5S22.9 3 16.001 3z"/></svg>
@@ -464,9 +507,13 @@
 
   async function deletePost(id){
     posts = posts.filter(p=>p.id!==id);
-    await savePosts();
     renderList();
-    showToast('Entry deleted');
+    try{
+      await db.from('posts').delete().eq('id', id);
+      showToast('Entry deleted');
+    }catch(e){
+      showToast("Couldn't delete on the server");
+    }
   }
 
   document.querySelectorAll('.pill').forEach(pill=>{
@@ -498,23 +545,85 @@
     });
   });
 
-  $('newEntryBtn').addEventListener('click', ()=>{
+  let currentImage = null; // holds resized base64 dataURL for the post being written
+
+  function resetWriteForm(){
     $('postTitleInput').value = '';
     $('postBodyInput').value = '';
+    $('postImageInput').value = '';
+    currentImage = null;
+    $('imagePreviewWrap').classList.add('hidden');
+    $('imagePickerLabel').classList.remove('hidden');
+  }
+
+  $('newEntryBtn').addEventListener('click', ()=>{
+    resetWriteForm();
     view('write');
   });
   $('cancelWriteBtn').addEventListener('click', ()=>view('list'));
   $('backFromDetailBtn').addEventListener('click', ()=>view('list'));
 
+  // Resize the chosen photo down before storing, so uploads stay fast
+  // and don't hit request-size limits.
+  function resizeImage(file, maxWidth){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('read failed'));
+      reader.onload = (e)=>{
+        const img = new Image();
+        img.onerror = () => reject(new Error('image load failed'));
+        img.onload = ()=>{
+          const scale = Math.min(1, maxWidth / img.width);
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  $('postImageInput').addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      currentImage = await resizeImage(file, 1200);
+      $('imagePreview').src = currentImage;
+      $('imagePreviewWrap').classList.remove('hidden');
+      $('imagePickerLabel').classList.add('hidden');
+    }catch(err){
+      showToast("Couldn't load that photo");
+    }
+  });
+  $('removeImageBtn').addEventListener('click', ()=>{
+    currentImage = null;
+    $('postImageInput').value = '';
+    $('imagePreviewWrap').classList.add('hidden');
+    $('imagePickerLabel').classList.remove('hidden');
+  });
+
   $('publishBtn').addEventListener('click', async ()=>{
     const title = $('postTitleInput').value.trim();
     const body = $('postBodyInput').value.trim();
     if(!title || !body){ showToast(writeLang==='or' ? 'ଶୀର୍ଷକ ଓ କିଛି ଧାଡି ଲେଖନ୍ତୁ' : 'Add a title and a few lines first'); return; }
-    posts.push({ id: 'p_'+Date.now(), title, body, lang: writeLang, createdAt: Date.now() });
-    await savePosts();
-    renderList();
-    view('list');
-    showToast(writeLang==='or' ? 'ପ୍ରକାଶିତ' : 'Published');
+    const newPost = { id: 'p_'+Date.now(), title, body, lang: writeLang, image: currentImage, createdAt: Date.now() };
+    try{
+      const { error } = await db.from('posts').insert([{
+        id: newPost.id, title: newPost.title, body: newPost.body,
+        lang: newPost.lang, image: newPost.image, created_at: newPost.createdAt
+      }]);
+      if(error) throw error;
+      posts.push(newPost);
+      renderList();
+      view('list');
+      showToast(writeLang==='or' ? 'ପ୍ରକାଶିତ' : 'Published');
+    }catch(e){
+      showToast("Couldn't publish — check your connection");
+    }
   });
 
   ['brandTitle','authorName','tagline','aboutText'].forEach(id=>{
