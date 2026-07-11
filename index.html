@@ -6,6 +6,8 @@
 <title>AKSHARA — Smruti Ranjan Tripathy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Serif:wght@400;600&family=Noto+Serif+Oriya:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --ink:#1f160d;
@@ -175,18 +177,6 @@
   }
   .lang-select-row button.active{ background:var(--ink); color:var(--leaf); border-color:var(--ink); }
 
-  .image-picker{
-    display:flex; align-items:center; justify-content:center;
-    border:1.5px dashed var(--ink-soft); border-radius:14px; padding:18px;
-    margin-bottom:14px; cursor:pointer; font-size:0.85rem; color:var(--ink-soft);
-    background:rgba(31,22,13,0.03); min-height:44px;
-  }
-  .image-picker:hover{ background:rgba(31,22,13,0.06); }
-  #imagePreviewWrap{ margin-bottom:16px; }
-  #imagePreview{ width:100%; max-height:260px; object-fit:cover; border-radius:14px; display:block; margin-bottom:8px; }
-  .entry-image{ width:100%; max-height:220px; object-fit:cover; border-radius:14px; margin-bottom:14px; display:block; }
-  .detail-image{ width:100%; max-height:340px; object-fit:cover; border-radius:16px; margin:14px 0 20px; display:block; }
-
   /* Detail view */
   .detail-top{ display:flex; align-items:center; gap:10px; margin-bottom:20px; }
   .detail h2{ font-family:'Cormorant Garamond', serif; font-size:2rem; margin:16px 0 6px; }
@@ -290,7 +280,7 @@
         <h3>About</h3>
         <p id="aboutText" contenteditable="true" spellcheck="false">Smruti Ranjan Tripathy writes here in Odia and English — on work, family, money, and the small things worth remembering.</p>
       </div>
-      <footer class="site-footer">AKSHARA · a personal journal · tap text above to edit</footer>
+      <footer class="site-footer">AKSHARA · a personal journal</footer>
     </div>
 
     <!-- WRITE VIEW -->
@@ -305,17 +295,7 @@
       </div>
       <input type="text" id="postTitleInput" placeholder="Title">
       <textarea id="postBodyInput" placeholder="Write what's on your mind..."></textarea>
-
-      <label class="image-picker" id="imagePickerLabel">
-        <span id="imagePickerText">📷 Add a photo (optional)</span>
-        <input type="file" id="postImageInput" accept="image/*" style="display:none;">
-      </label>
-      <div id="imagePreviewWrap" class="hidden">
-        <img id="imagePreview" alt="Selected photo preview">
-        <button type="button" class="btn-ghost" id="removeImageBtn">✕ Remove photo</button>
-      </div>
-
-      <button class="btn-primary" id="publishBtn" style="width:100%; margin-top:6px;">Publish</button>
+      <button class="btn-primary" id="publishBtn" style="width:100%;">Publish</button>
     </div>
 
     <!-- DETAIL VIEW -->
@@ -334,7 +314,7 @@
   <div class="sheet-overlay" id="sheetOverlay">
     <div class="sheet">
       <h3>Settings</h3>
-      <p class="note">Your WhatsApp number connects the chat button and share links. Kept only in this journal.</p>
+      <p class="note">Your WhatsApp number connects the chat button and share links.</p>
       <label for="waNumberInput">WhatsApp number (with country code, digits only)</label>
       <input type="text" id="waNumberInput" placeholder="e.g. 91XXXXXXXXXX">
       <div class="sheet-actions">
@@ -347,12 +327,12 @@
   <div class="toast" id="toast"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
+  // --- SUPABASE CONFIGURATION DONE ---
   const SUPABASE_URL = 'https://trtkkgxpyiacmrzuqdwu.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_9uIL4F4C43nMQ9RUfNBVKg_PBuoe5Ok';
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRydGtrZ3hweWlhY21yenVxZHd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODExNzksImV4cCI6MjA5OTM1NzE3OX0.NVf2D9NfyaQYbju-QkXH9C79s4p9_YpDoiuj2yz5vqE';    
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let posts = [];
   let meta = { waNumber: "" };
@@ -400,44 +380,36 @@
     return d.innerHTML;
   }
 
-  // Reads and writes go to Supabase now, so every article is stored on the
-  // server and shows up for anyone who visits the site, on any device.
   async function loadAll(){
-    try{
-      const { data, error } = await db.from('site_meta').select('*').eq('id','main').single();
-      if(data && !error){
-        meta = {
-          waNumber: data.wa_number || '',
-          brandTitle: data.brand_title || '',
-          authorName: data.author_name || '',
-          tagline: data.tagline || '',
-          aboutText: data.about_text || ''
-        };
-      }
-    }catch(e){}
+    try {
+      let { data, error } = await supabaseClient
+        .from('letters')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      posts = data.map(p => ({
+        id: p.id,
+        title: p.title,
+        body: p.body,
+        lang: p.lang,
+        createdAt: new Date(p.created_at).getTime()
+      })) || [];
+    } catch(e) {
+      console.error(e);
+      posts = [];
+    }
 
-    try{
-      const { data, error } = await db.from('posts').select('*').order('created_at', { ascending:false });
-      if(data && !error){
-        posts = data.map(r => ({ id:r.id, title:r.title, body:r.body, lang:r.lang, image:r.image, createdAt:r.created_at }));
-      }
-    }catch(e){ posts = []; }
+    const localMeta = localStorage.getItem('akshara-local-meta');
+    if(localMeta) meta = JSON.parse(localMeta);
 
     $('waNumberInput').value = meta.waNumber || '';
     $('waFloat').href = waLink(meta.waNumber);
     renderList();
   }
 
-  async function saveMeta(){
-    try{
-      await db.from('site_meta').update({
-        wa_number: meta.waNumber || null,
-        brand_title: meta.brandTitle || null,
-        author_name: meta.authorName || null,
-        tagline: meta.tagline || null,
-        about_text: meta.aboutText || null
-      }).eq('id','main');
-    }catch(e){ showToast("Couldn't save settings"); }
+  function saveMetaLocally(){
+    localStorage.setItem('akshara-local-meta', JSON.stringify(meta));
     $('waFloat').href = waLink(meta.waNumber);
   }
 
@@ -452,8 +424,7 @@
     emptyState.classList.add('hidden');
     entryCount.textContent = `${posts.length} ${posts.length===1?'entry':'entries'}`;
 
-    const sorted = [...visible].sort((a,b)=>b.createdAt - a.createdAt);
-    sorted.forEach((post)=>{
+    visible.forEach((post)=>{
       const isOr = post.lang === 'or';
       const card = document.createElement('div');
       card.className = 'entry';
@@ -462,7 +433,6 @@
           <span class="lang-tag ${isOr?'or':''}">${isOr?'ଓଡ଼ିଆ':'ENGLISH'}</span>
           <span>${formatDate(post.createdAt)}</span>
         </div>
-        ${post.image ? `<img class="entry-image" src="${post.image}" alt="">` : ''}
         <h2 class="${isOr?'lang-or':''}">${escapeHtml(post.title)}</h2>
         <p class="${isOr?'lang-or':''}">${escapeHtml(excerpt(post.body))}</p>
         <div class="entry-actions">
@@ -486,7 +456,7 @@
   }
 
   function openDetail(id){
-    const post = posts.find(p=>p.id===id);
+    const post = posts.find(p=>p.id==id);
     if(!post) return;
     const isOr = post.lang === 'or';
     $('detailContent').innerHTML = `
@@ -495,7 +465,6 @@
         <span>${formatDate(post.createdAt)}</span>
       </div>
       <h2 class="${isOr?'lang-or':''}">${escapeHtml(post.title)}</h2>
-      ${post.image ? `<img class="detail-image" src="${post.image}" alt="">` : ''}
       <p class="${isOr?'lang-or':''}">${escapeHtml(post.body)}</p>
       <a class="share-btn" href="${shareUrl(post)}" target="_blank" rel="noopener">
         <svg width="14" height="14" viewBox="0 0 32 32" fill="white"><path d="M16.001 3C9.101 3 3.5 8.6 3.5 15.5c0 2.43.71 4.69 1.93 6.6L3 29l7.09-2.37a12.44 12.44 0 0 0 5.9 1.5h.01c6.9 0 12.5-5.6 12.5-12.5S22.9 3 16.001 3z"/></svg>
@@ -506,13 +475,19 @@
   }
 
   async function deletePost(id){
-    posts = posts.filter(p=>p.id!==id);
-    renderList();
-    try{
-      await db.from('posts').delete().eq('id', id);
+    const password = prompt("Enter Admin Password to Delete:");
+    if(password !== "12345") { // <-- Apna delete password badal sakte hain yahan
+      alert("Unauthorized!");
+      return;
+    }
+
+    const { error } = await supabaseClient.from('letters').delete().eq('id', id);
+    if(error) {
+      showToast("Error deleting");
+    } else {
+      posts = posts.filter(p=>p.id!=id);
+      renderList();
       showToast('Entry deleted');
-    }catch(e){
-      showToast("Couldn't delete on the server");
     }
   }
 
@@ -545,96 +520,38 @@
     });
   });
 
-  let currentImage = null; // holds resized base64 dataURL for the post being written
-
-  function resetWriteForm(){
+  $('newEntryBtn').addEventListener('click', ()=>{
     $('postTitleInput').value = '';
     $('postBodyInput').value = '';
-    $('postImageInput').value = '';
-    currentImage = null;
-    $('imagePreviewWrap').classList.add('hidden');
-    $('imagePickerLabel').classList.remove('hidden');
-  }
-
-  $('newEntryBtn').addEventListener('click', ()=>{
-    resetWriteForm();
     view('write');
   });
   $('cancelWriteBtn').addEventListener('click', ()=>view('list'));
   $('backFromDetailBtn').addEventListener('click', ()=>view('list'));
 
-  // Resize the chosen photo down before storing, so uploads stay fast
-  // and don't hit request-size limits.
-  function resizeImage(file, maxWidth){
-    return new Promise((resolve, reject)=>{
-      const reader = new FileReader();
-      reader.onerror = () => reject(new Error('read failed'));
-      reader.onload = (e)=>{
-        const img = new Image();
-        img.onerror = () => reject(new Error('image load failed'));
-        img.onload = ()=>{
-          const scale = Math.min(1, maxWidth / img.width);
-          const w = Math.round(img.width * scale);
-          const h = Math.round(img.height * scale);
-          const canvas = document.createElement('canvas');
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL('image/jpeg', 0.8));
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  $('postImageInput').addEventListener('change', async (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    try{
-      currentImage = await resizeImage(file, 1200);
-      $('imagePreview').src = currentImage;
-      $('imagePreviewWrap').classList.remove('hidden');
-      $('imagePickerLabel').classList.add('hidden');
-    }catch(err){
-      showToast("Couldn't load that photo");
-    }
-  });
-  $('removeImageBtn').addEventListener('click', ()=>{
-    currentImage = null;
-    $('postImageInput').value = '';
-    $('imagePreviewWrap').classList.add('hidden');
-    $('imagePickerLabel').classList.remove('hidden');
-  });
-
   $('publishBtn').addEventListener('click', async ()=>{
     const title = $('postTitleInput').value.trim();
     const body = $('postBodyInput').value.trim();
     if(!title || !body){ showToast(writeLang==='or' ? 'ଶୀର୍ଷକ ଓ କିଛି ଧାଡି ଲେଖନ୍ତୁ' : 'Add a title and a few lines first'); return; }
-    const newPost = { id: 'p_'+Date.now(), title, body, lang: writeLang, image: currentImage, createdAt: Date.now() };
-    try{
-      const { error } = await db.from('posts').insert([{
-        id: newPost.id, title: newPost.title, body: newPost.body,
-        lang: newPost.lang, image: newPost.image, created_at: newPost.createdAt
-      }]);
-      if(error) throw error;
-      posts.push(newPost);
-      renderList();
+    
+    const password = prompt("Enter Admin Password to Publish:");
+    if(password !== "12345") { // <-- Apna publish password badal sakte hain yahan
+      alert("Wrong password!");
+      return;
+    }
+
+    const { data, error } = await supabaseClient
+      .from('letters')
+      .insert([{ title, body, lang: writeLang }])
+      .select();
+
+    if(error) {
+      showToast("Error saving to database");
+      console.error(error);
+    } else {
+      await loadAll();
       view('list');
       showToast(writeLang==='or' ? 'ପ୍ରକାଶିତ' : 'Published');
-    }catch(e){
-      showToast("Couldn't publish — check your connection");
     }
-  });
-
-  ['brandTitle','authorName','tagline','aboutText'].forEach(id=>{
-    $(id).addEventListener('blur', async ()=>{
-      // stored implicitly via DOM; also persist to meta for reload consistency
-      meta.brandTitle = $('brandTitle').textContent.trim();
-      meta.authorName = $('authorName').textContent.trim();
-      meta.tagline = $('tagline').textContent.trim();
-      meta.aboutText = $('aboutText').textContent.trim();
-      await saveMeta();
-    });
   });
 
   $('settingsBtn').addEventListener('click', ()=> $('sheetOverlay').classList.add('open'));
@@ -642,21 +559,13 @@
   $('sheetOverlay').addEventListener('click', (e)=>{ if(e.target.id==='sheetOverlay') $('sheetOverlay').classList.remove('open'); });
   $('saveSettingsBtn').addEventListener('click', async ()=>{
     meta.waNumber = $('waNumberInput').value.trim();
-    await saveMeta();
+    saveMetaLocally();
     $('sheetOverlay').classList.remove('open');
     showToast('Settings saved');
   });
 
-  async function restoreEditableFields(){
-    if(meta.brandTitle) $('brandTitle').textContent = meta.brandTitle;
-    if(meta.authorName) $('authorName').textContent = meta.authorName;
-    if(meta.tagline) $('tagline').textContent = meta.tagline;
-    if(meta.aboutText) $('aboutText').textContent = meta.aboutText;
-  }
-
   (async ()=>{
     await loadAll();
-    restoreEditableFields();
   })();
 })();
 </script>
