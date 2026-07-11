@@ -259,7 +259,10 @@
   </header>
 
   <hr class="etched-rule">
-
+// --- SUPABASE CONFIGURATION DONE ---
+  const SUPABASE_URL = 'https://trtkkgxpyiacmrzuqdwu.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRydGtrZ3hweWlhY21yenVxZHd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODExNzksImV4cCI6MjA5OTM1NzE3OX0.NVf2D9NfyaQYbju-QkXH9C79s4p9_YpDoiuj2yz5vqE';    
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   <main>
     <!-- LIST VIEW -->
     <div id="listView">
