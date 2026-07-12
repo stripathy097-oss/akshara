@@ -215,7 +215,7 @@
     .sheet { background: var(--leaf); width: 100%; max-width: 520px; border-radius: 24px 24px 0 0; padding: 26px 24px 32px; }
     .sheet h3 { font-family: 'Cormorant Garamond', serif; margin: 0 0 4px; font-size: 1.3rem; }
     .sheet p.note { font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 18px; }
-    .sheet label { font-family: 'IBM Plex Mono', monospace; font-size: 0.7 sugarrem; color: var(--ink-soft); display: block; margin-bottom: 6px; }
+    .sheet label { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-soft); display: block; margin-bottom: 6px; }
     .sheet input {
       width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--leaf-line);
       font-family: 'Noto Serif', serif; font-size: 0.95rem; margin-bottom: 16px; background: #fbf5e4; color: var(--ink);
@@ -513,7 +513,7 @@
         titleEl.style.fontFamily = "'Noto Serif Oriya', serif";
         bodyEl.style.fontFamily = "'Noto Serif Oriya', serif";
         titleEl.placeholder = 'ଶୀର୍ଷକ';
-        bodyEl.placeholder = 'ଆପଣଙ୍କ ମନରେ ଥିବା କଥา ଲେଖନ୍ତୁ...';
+        bodyEl.placeholder = 'ଆପଣଙ୍କ ମନରେ ଥିବା କଥା ଲେଖନ୍ତୁ...';
       } else {
         titleEl.style.fontFamily = "'Cormorant Garamond', serif";
         bodyEl.style.fontFamily = "'Noto Serif', serif";
@@ -543,9 +543,11 @@
       return;
     }
 
+    // --- UPDATED SUPABASE WITH .SELECT() TO PREVENT WRITE CRASH ---
     const { data, error } = await supabaseClient
       .from('letters')
-      .insert([{ title, body, lang: writeLang }]);
+      .insert([{ title, body, lang: writeLang }])
+      .select();
 
     if(error) {
       showToast("Error saving to database");
@@ -560,13 +562,15 @@
   $('settingsBtn').addEventListener('click', ()=> $('sheetOverlay').classList.add('open'));
   $('closeSettingsBtn').addEventListener('click', ()=> $('sheetOverlay').classList.remove('open'));
   
-  $('saveSettingsBtn').addEventListener('click', ()=>{
+  $('saveSettingsBtn').addEventListener('click', AppSaveSettings);
+  
+  function AppSaveSettings(){
     meta.waNumber = $('waNumberInput').value.trim();
     localStorage.setItem('akshara-local-meta', JSON.stringify(meta));
     $('waFloat').href = waLink(meta.waNumber);
     $('sheetOverlay').classList.remove('open');
     showToast('Settings saved');
-  });
+  }
 
   // Self Initialization
   loadAll();
