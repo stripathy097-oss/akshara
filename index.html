@@ -1,318 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>AKSHARA — Smruti Ranjan Tripathy</title>
-  
-  <!-- Typography -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Serif:wght@400;600&family=Noto+Serif+Oriya:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
-  <!-- Supabase Official SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AKSHARA — Smruti Ranjan Tripathy</title>
+<meta name="description" content="A personal journal by Smruti Ranjan Tripathy, in English, Hindi and Odia.">
+<meta property="og:title" content="AKSHARA — Smruti Ranjan Tripathy">
+<meta property="og:description" content="A personal journal in English, Hindi and Odia.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Serif:wght@400;600&family=Noto+Serif+Oriya:wght@400;600&family=Noto+Serif+Devanagari:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f160d; --ink-soft:#4a3a24;
+    --leaf:#e4ce9c; --leaf-dim:#d8be85; --leaf-line:rgba(31,22,13,0.14);
+    --rust:#a8412b; --rust-deep:#8a3121; --gold:#b98a2e;
+    --whatsapp:#25d366; --whatsapp-deep:#1da851;
+    --card:#fbf5e4;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{ margin:0; background:var(--ink); color:var(--leaf); font-family:'Noto Serif', serif; display:flex; justify-content:center; }
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition-duration:0.001ms !important;} }
+  .lang-or{ font-family:'Noto Serif Oriya', serif; }
+  .lang-hi{ font-family:'Noto Serif Devanagari', serif; }
+  #app{ width:100%; max-width:960px; min-height:100vh; position:relative; }
+  a{ color:inherit; }
+  button{ font-family:'Noto Serif', serif; cursor:pointer; border:none; border-radius:100px; }
+  button:focus-visible, [contenteditable]:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible{
+    outline:2px solid var(--rust); outline-offset:2px;
+  }
+  .hidden{ display:none !important; }
 
-  <style>
-    :root {
-      --ink: #1f160d;
-      --ink-soft: #4a3a24;
-      --leaf: #e4ce9c;
-      --leaf-dim: #d8be85;
-      --leaf-line: rgba(31,22,13,0.14);
-      --rust: #a8412b;
-      --rust-deep: #8a3121;
-      --gold: #b98a2e;
-      --whatsapp: #25d366;
-      --whatsapp-deep: #1da851;
-    }
-    
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    
-    body {
-      margin: 0;
-      background: var(--ink);
-      color: var(--leaf);
-      font-family: 'Noto Serif', serif;
-      display: flex;
-      justify-content: center;
-    }
-    
-    .lang-or { font-family: 'Noto Serif Oriya', serif; }
-    #app { width: 100%; max-width: 920px; min-height: 100vh; position: relative; }
+  /* NAV */
+  nav.topnav{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 24px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem;
+    letter-spacing:0.05em; text-transform:uppercase;
+  }
+  nav.topnav .navlinks{ display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+  nav.topnav button, nav.topnav a{ background:none; color:var(--leaf-dim); font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.05em; text-transform:uppercase; padding:6px 2px; text-decoration:none; }
+  nav.topnav .navlinks button.active-nav{ color:var(--gold); }
 
-    /* ---------- HERO SECTION ---------- */
-    header.hero {
-      padding: 64px 28px 44px;
-      text-align: center;
-    }
-    .emblem { width: 76px; height: 76px; margin: 0 auto 22px; }
-    .emblem svg { width: 100%; height: 100%; animation: spin 60s linear infinite; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  /* HERO */
+  header.hero{ padding:20px 28px 40px; text-align:center; }
+  .emblem{ width:70px; height:70px; margin:0 auto 18px; }
+  .emblem svg{ width:100%; height:100%; animation:spin 60s linear infinite; }
+  @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .brand{ font-family:'Cormorant Garamond', serif; font-weight:600; font-size:3rem; letter-spacing:0.06em; margin:0; outline:none; }
+  .byline{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); margin-top:8px; outline:none; }
+  .tagline{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:1.15rem; color:var(--leaf-dim); margin-top:14px; outline:none; }
 
-    .brand {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
-      font-size: 3.4rem;
-      letter-spacing: 0.06em;
-      margin: 0;
-      color: var(--leaf);
-    }
-    .byline {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.78rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-top: 10px;
-    }
-    .tagline {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: 1.25rem;
-      color: var(--leaf-dim);
-      margin-top: 16px;
-    }
-    .tagline.lang-or { font-style: normal; font-size: 1.1rem; }
+  .etched-rule{ width:100%; border:none; height:6px; background-image:repeating-linear-gradient(90deg, var(--leaf-line) 0 2px, transparent 2px 10px); opacity:0.6; }
 
-    .lang-pills {
-      display: flex; justify-content: center; gap: 10px; margin-top: 30px; flex-wrap: wrap;
-    }
-    .pill {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
-      padding: 8px 18px;
-      border-radius: 100px;
-      border: 1px solid rgba(228,206,156,0.35);
-      background: transparent;
-      color: var(--leaf-dim);
-      cursor: pointer;
-      min-height: 38px;
-    }
-    .pill.active { background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 600; }
+  main{ background:var(--leaf); color:var(--ink); border-radius:32px 32px 0 0; padding:30px 24px 100px; box-shadow:0 -10px 34px rgba(0,0,0,0.3); min-height:60vh; }
 
-    .etched-rule {
-      width: 100%; max-width: 920px; margin: 0 auto;
-      border: none; height: 6px;
-      background-image: repeating-linear-gradient(90deg, var(--leaf-line) 0 2px, transparent 2px 10px);
-      opacity: 0.6;
-    }
+  /* FILTERS + SEARCH */
+  .controls{ display:flex; flex-direction:column; gap:14px; margin-bottom:24px; }
+  .search-row{ display:flex; gap:8px; }
+  .search-row input{ flex:1; padding:12px 16px; border-radius:100px; border:1px solid var(--leaf-line); font-family:'Noto Serif', serif; font-size:0.9rem; background:var(--card); color:var(--ink); }
+  .filter-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .pill{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; padding:8px 16px; border-radius:100px; border:1px solid rgba(31,22,13,0.25); background:transparent; color:var(--ink-soft); min-height:36px; }
+  .pill.active{ background:var(--gold); color:var(--ink); border-color:var(--gold); font-weight:600; }
+  .tag-chip{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; padding:4px 12px; border-radius:100px; background:rgba(168,65,43,0.1); color:var(--rust-deep); border:1px solid rgba(168,65,43,0.25); }
 
-    /* ---------- MAIN WRAPPER ---------- */
-    main {
-      background: var(--leaf);
-      color: var(--ink);
-      border-radius: 32px 32px 0 0;
-      padding: 34px 26px 100px;
-      box-shadow: 0 -10px 34px rgba(0,0,0,0.3);
-    }
-    
-    .toolbar {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 10px;
-    }
-    .count { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--ink-soft); }
-    
-    button { font-family: 'Noto Serif', serif; cursor: pointer; border: none; border-radius: 100px; }
-    
-    .btn-primary {
-      background: var(--ink); color: var(--leaf); font-weight: 600; font-size: 0.9rem;
-      padding: 12px 22px; min-height:44px;
-    }
-    .btn-primary:active { background: var(--ink-soft); }
-    
-    .btn-ghost {
-      background: transparent; color: var(--ink); font-weight: 600; font-size: 0.85rem;
-      padding: 10px 6px; min-height: 44px; display: flex; align-items: center; gap: 6px;
-    }
-    
-    .icon-btn {
-      background: var(--leaf-dim); width: 42px; height: 42px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-    }
+  .toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px; }
+  .count{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--ink-soft); }
+  .btn-primary{ background:var(--ink); color:var(--leaf); font-weight:600; font-size:0.88rem; padding:12px 20px; min-height:44px; }
+  .btn-primary:active{ background:var(--ink-soft); }
+  .btn-ghost{ background:transparent; color:var(--ink); font-weight:600; font-size:0.85rem; padding:10px 6px; min-height:44px; display:flex; align-items:center; gap:6px; }
+  .icon-btn{ background:var(--leaf-dim); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.05rem; }
 
-    /* ---------- ENTRY CARDS ---------- */
-    .entry {
-      background: #fbf5e4; border: 1px solid var(--leaf-line); border-radius: 20px;
-      padding: 22px 22px 16px; margin-bottom: 18px;
-    }
-    .entry-meta {
-      display: flex; justify-content: space-between; align-items: center;
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--rust-deep);
-      margin-bottom: 10px;
-    }
-    .lang-tag {
-      padding: 3px 10px; border-radius: 100px; background: var(--rust); color: #fff; font-weight: 600; font-size: 0.65rem; letter-spacing: 0.04em;
-    }
-    .lang-tag.or { background: var(--gold); }
-    
-    .entry h2 {
-      font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 1.7rem;
-      margin: 0 0 10px; line-height: 1.2;
-    }
-    .entry h2.lang-or { font-family: 'Noto Serif Oriya', serif; font-size: 1.4rem; font-weight: 600; }
-    
-    .entry p { font-size: 0.95rem; line-height: 1.6; color: #3a2c19; margin: 0 0 16px; white-space: pre-wrap; }
-    
-    .entry-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-    
-    .share-btn {
-      background: var(--whatsapp); color: #fff; font-weight: 600; font-size: 0.8rem;
-      padding: 9px 14px; display: flex; align-items: center; gap: 6px; min-height: 40px; text-decoration: none; border-radius: 100px;
-    }
-    .share-btn:active { background: var(--whatsapp-deep); }
-    
-    .delete-btn { color: var(--rust-deep); background: none; font-size: 0.8rem; font-weight: 600; padding: 8px; min-height: 40px; }
+  /* ENTRY CARDS */
+  .entry{ background:var(--card); border:1px solid var(--leaf-line); border-radius:20px; padding:20px 20px 16px; margin-bottom:16px; }
+  .entry-meta{ display:flex; justify-content:space-between; align-items:center; font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--rust-deep); margin-bottom:10px; flex-wrap:wrap; gap:6px; }
+  .lang-tag{ padding:3px 10px; border-radius:100px; background:var(--rust); color:#fff; font-weight:600; font-size:0.62rem; letter-spacing:0.03em; }
+  .lang-tag.hi{ background:#8a5b2a; }
+  .lang-tag.or{ background:var(--gold); }
+  .entry-image{ width:100%; max-height:220px; object-fit:cover; border-radius:14px; margin-bottom:12px; display:block; }
+  .entry h2{ font-family:'Cormorant Garamond', serif; font-weight:600; font-size:1.6rem; margin:0 0 8px; line-height:1.22; }
+  .entry h2.lang-or, .entry h2.lang-hi{ font-size:1.35rem; font-weight:600; }
+  .entry p.excerpt{ font-size:0.93rem; line-height:1.6; color:#3a2c19; margin:0 0 12px; white-space:pre-wrap; }
+  .entry .tags-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .entry-actions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .share-btn{ background:var(--whatsapp); color:#fff; font-weight:600; font-size:0.78rem; padding:9px 13px; display:flex; align-items:center; gap:5px; min-height:38px; text-decoration:none; }
+  .share-btn.twitter{ background:#1d1d1d; }
+  .share-btn.fb{ background:#1877f2; }
+  .share-btn.copy{ background:var(--ink-soft); }
+  .delete-btn{ color:var(--rust-deep); background:none; font-size:0.78rem; font-weight:600; padding:8px; min-height:38px; }
 
-    .empty { text-align: center; padding: 60px 10px; color: var(--ink-soft); }
-    .empty .glyph { font-size: 2.4rem; margin-bottom: 12px; }
-    .empty p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.2rem; }
+  .empty{ text-align:center; padding:60px 10px; color:var(--ink-soft); }
+  .empty .glyph{ font-size:2.4rem; margin-bottom:12px; }
+  .empty p{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:1.2rem; }
 
-    /* ---------- WRITE INTERFACE ---------- */
-    .write-view input[type="text"], .write-view textarea {
-      width: 100%; border: 1px solid var(--leaf-line); border-radius: 12px; padding: 13px 15px;
-      font-size: 0.95rem; background: #fbf5e4; color: var(--ink); margin-bottom: 14px; font-family: 'Noto Serif', serif;
-    }
-    .write-view input[type="text"] { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; }
-    .write-view textarea { min-height: 240px; resize: vertical; line-height: 1.6; }
-    
-    .write-top { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .write-top h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; margin: 0; }
-    
-    .lang-select-row { display: flex; gap: 10px; margin-bottom: 16px; }
-    .lang-select-row button {
-      flex: 1; padding: 11px; border: 1px solid var(--leaf-line); background: transparent; color: var(--ink-soft); font-weight: 600; font-size: 0.85rem; border-radius: 10px;
-    }
-    .lang-select-row button.active { background: var(--ink); color: var(--leaf); border-color: var(--ink); }
+  /* WRITE VIEW */
+  .write-view input[type="text"], .write-view textarea, .write-view select{
+    width:100%; border:1px solid var(--leaf-line); border-radius:12px; padding:12px 14px;
+    font-size:0.93rem; background:var(--card); color:var(--ink); margin-bottom:14px; font-family:'Noto Serif', serif;
+  }
+  .write-view input[type="text"].title-input{ font-family:'Cormorant Garamond', serif; font-size:1.25rem; font-weight:600; }
+  .write-view textarea.body-input{ min-height:220px; resize:vertical; line-height:1.6; }
+  .write-top{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+  .write-top h3{ font-family:'Cormorant Garamond', serif; font-size:1.2rem; margin:0; }
+  .lang-select-row{ display:flex; gap:8px; margin-bottom:14px; }
+  .lang-select-row button{ flex:1; padding:10px; border:1px solid var(--leaf-line); background:transparent; color:var(--ink-soft); font-weight:600; font-size:0.82rem; border-radius:10px; }
+  .lang-select-row button.active{ background:var(--ink); color:var(--leaf); border-color:var(--ink); }
+  .field-label{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--ink-soft); margin:4px 0 6px; display:block; text-transform:uppercase; letter-spacing:0.04em; }
+  .image-picker{ display:flex; align-items:center; justify-content:center; border:1.5px dashed var(--ink-soft); border-radius:14px; padding:16px; margin-bottom:12px; cursor:pointer; font-size:0.82rem; color:var(--ink-soft); background:rgba(31,22,13,0.03); min-height:44px; }
+  #imagePreviewWrap, #galleryPreviewWrap{ margin-bottom:14px; }
+  #imagePreview{ width:100%; max-height:220px; object-fit:cover; border-radius:14px; display:block; margin-bottom:8px; }
+  .gallery-thumbs{ display:flex; gap:8px; flex-wrap:wrap; }
+  .gallery-thumbs img{ width:70px; height:70px; object-fit:cover; border-radius:10px; }
 
-    /* ---------- DETAIL INTERFACE ---------- */
-    .detail-top { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .detail h2 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin: 16px 0 6px; }
-    .detail h2.lang-or { font-family: 'Noto Serif Oriya', serif; font-size: 1.7rem; }
-    .detail p { font-size: 1rem; line-height: 1.75; color: #2c2013; white-space: pre-wrap; margin-bottom: 26px; }
+  /* DETAIL VIEW */
+  .detail-top{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+  .detail h2{ font-family:'Cormorant Garamond', serif; font-size:1.9rem; margin:14px 0 4px; }
+  .detail h2.lang-or, .detail h2.lang-hi{ font-size:1.6rem; }
+  .detail .entry-meta{ margin-bottom:16px; }
+  .detail-image{ width:100%; max-height:340px; object-fit:cover; border-radius:16px; margin:12px 0 18px; display:block; }
+  .detail p.body{ font-size:1rem; line-height:1.75; color:#2c2013; white-space:pre-wrap; margin-bottom:20px; }
+  .video-embed{ position:relative; width:100%; padding-top:56.25%; margin:16px 0; border-radius:14px; overflow:hidden; background:#000; }
+  .video-embed iframe{ position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+  .gallery-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:8px; margin:14px 0 20px; }
+  .gallery-grid img{ width:100%; height:110px; object-fit:cover; border-radius:10px; }
+  .reading-time{ font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--ink-soft); }
 
-    /* ---------- FOOTER & META ---------- */
-    .about { margin-top: 36px; padding-top: 30px; border-top: 1px dashed var(--leaf-line); }
-    .about h3 { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--rust-deep); margin: 0 0 10px; }
-    .about p { font-size: 0.92rem; line-height: 1.6; color: #3a2c19; }
-    
-    footer.site-footer { text-align: center; margin-top: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--ink-soft); }
+  /* RELATED */
+  .related-title{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--rust-deep); margin:30px 0 14px; }
+  .related-list{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px){ .related-list{ grid-template-columns:1fr; } }
+  .related-card{ background:var(--card); border:1px solid var(--leaf-line); border-radius:14px; padding:14px; cursor:pointer; }
+  .related-card h4{ font-family:'Cormorant Garamond', serif; font-size:1.05rem; margin:0 0 4px; }
 
-    /* ---------- FLOATING CONTROLS ---------- */
-    .wa-float {
-      position: fixed; bottom: 24px; right: calc(50% - 460px + 24px);
-      width: 58px; height: 58px; border-radius: 50%; background: var(--whatsapp);
-      display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,0.3); z-index: 20;
-    }
-    @media (max-width: 968px) { .wa-float { right: 24px; } }
-    .wa-float svg { width: 29px; height: 29px; }
+  /* COMMENTS */
+  .comments-section{ margin-top:34px; border-top:1px dashed var(--leaf-line); padding-top:26px; }
+  .comments-section h3{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--rust-deep); margin:0 0 18px; }
+  .comment-form input, .comment-form textarea{ width:100%; border:1px solid var(--leaf-line); border-radius:10px; padding:10px 12px; font-family:'Noto Serif', serif; font-size:0.88rem; background:var(--card); color:var(--ink); margin-bottom:10px; }
+  .comment-form textarea{ min-height:80px; resize:vertical; }
+  .comment{ background:var(--card); border:1px solid var(--leaf-line); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
+  .comment.reply{ margin-left:24px; background:rgba(251,245,228,0.5); }
+  .comment-meta{ display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:0.66rem; color:var(--ink-soft); margin-bottom:6px; }
+  .comment p{ margin:0 0 8px; font-size:0.9rem; line-height:1.5; color:#2c2013; white-space:pre-wrap; }
+  .comment-actions{ display:flex; gap:14px; align-items:center; }
+  .comment-actions button{ background:none; font-size:0.75rem; color:var(--ink-soft); font-weight:600; padding:2px; }
+  .like-btn.liked{ color:var(--rust); }
+  .reply-form{ margin-top:10px; }
+  .honeypot{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
 
-    /* ---------- SETTINGS SHEET ---------- */
-    .sheet-overlay {
-      position: fixed; inset: 0; background: rgba(31,22,13,0.6); display: none;
-      align-items: flex-end; justify-content: center; z-index: 30;
-    }
-    .sheet-overlay.open { display: flex; }
-    .sheet { background: var(--leaf); width: 100%; max-width: 520px; border-radius: 24px 24px 0 0; padding: 26px 24px 32px; }
-    .sheet h3 { font-family: 'Cormorant Garamond', serif; margin: 0 0 4px; font-size: 1.3rem; }
-    .sheet p.note { font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 18px; }
-    .sheet label { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--ink-soft); display: block; margin-bottom: 6px; }
-    .sheet input {
-      width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--leaf-line);
-      font-family: 'Noto Serif', serif; font-size: 0.95rem; margin-bottom: 16px; background: #fbf5e4; color: var(--ink);
-    }
-    .sheet-actions { display: flex; gap: 10px; }
-    
-    .toast {
-      position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--leaf);
-      padding: 10px 18px; border-radius: 100px; font-size: 0.85rem; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.25s;
-    }
-    .toast.show { opacity: 1; }
-    .hidden { display: none !important; }
-  </style>
+  /* ABOUT / SUPPORT PAGES */
+  .page-section h2{ font-family:'Cormorant Garamond', serif; font-size:1.9rem; margin:0 0 14px; }
+  .page-section p{ font-size:0.98rem; line-height:1.7; color:#2c2013; }
+  .support-card{ background:var(--card); border:1px solid var(--leaf-line); border-radius:18px; padding:22px; margin-top:20px; text-align:center; }
+  .support-card h3{ font-family:'Cormorant Garamond', serif; font-size:1.4rem; margin:0 0 10px; }
+
+  /* NEWSLETTER + FOOTER */
+  .newsletter{ margin-top:36px; padding:22px; background:var(--card); border-radius:18px; border:1px solid var(--leaf-line); text-align:center; }
+  .newsletter h3{ font-family:'Cormorant Garamond', serif; font-size:1.2rem; margin:0 0 6px; }
+  .newsletter p{ font-size:0.85rem; color:var(--ink-soft); margin:0 0 14px; }
+  .newsletter-row{ display:flex; gap:8px; max-width:380px; margin:0 auto; }
+  .newsletter-row input{ flex:1; padding:11px 14px; border-radius:100px; border:1px solid var(--leaf-line); font-family:'Noto Serif', serif; font-size:0.88rem; }
+  footer.site-footer{ text-align:center; margin-top:36px; font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--ink-soft); }
+
+  /* FLOATING WA */
+  .wa-float{ position:fixed; bottom:22px; right:calc(50% - 480px + 20px); width:56px; height:56px; border-radius:50%; background:var(--whatsapp); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,0.3); z-index:20; }
+  @media (max-width:1000px){ .wa-float{ right:20px; } }
+  .wa-float svg{ width:28px; height:28px; }
+
+  /* SHEETS/MODALS */
+  .sheet-overlay{ position:fixed; inset:0; background:rgba(31,22,13,0.6); display:none; align-items:flex-end; justify-content:center; z-index:30; }
+  .sheet-overlay.open{ display:flex; }
+  .sheet{ background:var(--leaf); width:100%; max-width:520px; border-radius:24px 24px 0 0; padding:24px 22px 30px; max-height:88vh; overflow-y:auto; }
+  .sheet h3{ font-family:'Cormorant Garamond', serif; margin:0 0 4px; font-size:1.25rem; }
+  .sheet p.note{ font-size:0.78rem; color:var(--ink-soft); margin:0 0 16px; }
+  .sheet label{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--ink-soft); display:block; margin-bottom:5px; }
+  .sheet input{ width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--leaf-line); font-family:'Noto Serif', serif; font-size:0.92rem; margin-bottom:14px; background:var(--card); color:var(--ink); }
+  .sheet-actions{ display:flex; gap:10px; }
+  .toast{ position:fixed; top:18px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--leaf); padding:10px 18px; border-radius:100px; font-size:0.83rem; z-index:60; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+  .toast.show{ opacity:1; }
+</style>
 </head>
 <body>
-
 <div id="app">
+
+  <nav class="topnav">
+    <span>AKSHARA</span>
+    <div class="navlinks">
+      <button data-nav="home" class="active-nav">Home</button>
+      <button data-nav="about">About</button>
+      <button data-nav="support">Support</button>
+      <button id="loginNavBtn" data-nav="login">Author Login</button>
+      <button id="writeNavBtn" class="hidden">+ Write</button>
+      <button id="logoutBtn" class="hidden">Logout</button>
+    </div>
+  </nav>
+
   <header class="hero">
     <div class="emblem" aria-hidden="true">
       <svg viewBox="0 0 100 100" fill="none">
         <circle cx="50" cy="50" r="46" stroke="#b98a2e" stroke-width="2"/>
         <circle cx="50" cy="50" r="6" fill="#a8412b"/>
         <g stroke="#e4ce9c" stroke-width="1.6">
-          <line x1="50" y1="6" x2="50" y2="94"/>
-          <line x1="6" y1="50" x2="94" y2="50"/>
-          <line x1="16" y1="16" x2="84" y2="84"/>
-          <line x1="84" y1="16" x2="16" y2="84"/>
+          <line x1="50" y1="6" x2="50" y2="94"/><line x1="6" y1="50" x2="94" y2="50"/>
+          <line x1="16" y1="16" x2="84" y2="84"/><line x1="84" y1="16" x2="16" y2="84"/>
+          <line x1="50" y1="16" x2="50" y2="84" transform="rotate(22.5 50 50)"/>
+          <line x1="50" y1="16" x2="50" y2="84" transform="rotate(67.5 50 50)"/>
+          <line x1="50" y1="16" x2="50" y2="84" transform="rotate(112.5 50 50)"/>
+          <line x1="50" y1="16" x2="50" y2="84" transform="rotate(157.5 50 50)"/>
         </g>
       </svg>
     </div>
-    <h1 class="brand">AKSHARA</h1>
-    <div class="byline">by Smruti Ranjan Tripathy</div>
-    <div class="tagline">words, kept like letters on a palm leaf</div>
-
-    <div class="lang-pills">
-      <button class="pill active" data-filter="all">All</button>
-      <button class="pill" data-filter="en">English</button>
-      <button class="pill" data-filter="or">ଓଡ଼ିଆ</button>
-    </div>
+    <h1 class="brand" id="brandTitle" contenteditable="true" spellcheck="false">AKSHARA</h1>
+    <div class="byline" id="authorName" contenteditable="true" spellcheck="false">by Smruti Ranjan Tripathy</div>
+    <div class="tagline" id="tagline" contenteditable="true" spellcheck="false">words, kept like letters on a palm leaf</div>
   </header>
 
   <hr class="etched-rule">
 
   <main>
-    <!-- LIST VIEW -->
-    <div id="listView">
+    <!-- HOME VIEW -->
+    <div id="homeView">
+      <div class="controls">
+        <div class="search-row">
+          <input type="text" id="searchInput" placeholder="Search articles...">
+        </div>
+        <div class="filter-row" id="langFilterRow">
+          <button class="pill active" data-filter-type="lang" data-filter="all">All</button>
+          <button class="pill" data-filter-type="lang" data-filter="en">English</button>
+          <button class="pill" data-filter-type="lang" data-filter="hi">Hindi</button>
+          <button class="pill" data-filter-type="lang" data-filter="or">ଓଡ଼ିଆ</button>
+        </div>
+        <div class="filter-row" id="tagFilterRow"></div>
+      </div>
+
       <div class="toolbar">
         <span class="count" id="entryCount">0 entries</span>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙️</button>
-          <button class="btn-primary" id="newEntryBtn">✎ Write</button>
-        </div>
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙️</button>
       </div>
+
       <div id="entriesList"></div>
-      
       <div id="emptyState" class="empty hidden">
         <div class="glyph">ॐ</div>
         <p>No letters written yet.<br>Begin the first one.</p>
       </div>
 
-      <div class="about">
-        <h3>About</h3>
-        <p>Smruti Ranjan Tripathy writes here in Odia and English — on work, family, money, and the small things worth remembering.</p>
+      <div class="newsletter">
+        <h3>Stay in the loop</h3>
+        <p>Get an email when a new letter is published.</p>
+        <div class="newsletter-row">
+          <input type="email" id="newsletterEmail" placeholder="you@email.com">
+          <button class="btn-primary" id="newsletterBtn">Subscribe</button>
+        </div>
       </div>
-      <footer class="site-footer">AKSHARA · a personal journal</footer>
     </div>
 
-    <!-- WRITE VIEW -->
+    <!-- WRITE VIEW (admin only) -->
     <div id="writeView" class="write-view hidden">
       <div class="write-top">
         <button class="btn-ghost" id="cancelWriteBtn">← Back</button>
-        <h3>New letter</h3>
+        <h3 id="writeHeading">New letter</h3>
       </div>
       <div class="lang-select-row">
         <button type="button" class="lang-choice active" data-lang="en">English</button>
+        <button type="button" class="lang-choice" data-lang="hi">Hindi</button>
         <button type="button" class="lang-choice" data-lang="or">ଓଡ଼ିଆ</button>
       </div>
-      <input type="text" id="postTitleInput" placeholder="Title">
-      <textarea id="postBodyInput" placeholder="Write what's on your mind..."></textarea>
-      <button class="btn-primary" id="publishBtn" style="width:100%;">Publish</button>
+      <input type="text" id="postTitleInput" class="title-input" placeholder="Title">
+      <textarea id="postBodyInput" class="body-input" placeholder="Write what's on your mind..."></textarea>
+
+      <span class="field-label">Tags (comma separated)</span>
+      <input type="text" id="postTagsInput" placeholder="e.g. family, career, odisha">
+
+      <span class="field-label">Video link (optional — YouTube or Vimeo URL)</span>
+      <input type="text" id="postVideoInput" placeholder="https://youtube.com/watch?v=...">
+
+      <span class="field-label">Featured photo (optional)</span>
+      <label class="image-picker" id="imagePickerLabel">
+        <span id="imagePickerText">📷 Add a featured photo</span>
+        <input type="file" id="postImageInput" accept="image/*" style="display:none;">
+      </label>
+      <div id="imagePreviewWrap" class="hidden">
+        <img id="imagePreview" alt="Selected photo preview">
+        <button type="button" class="btn-ghost" id="removeImageBtn">✕ Remove photo</button>
+      </div>
+
+      <span class="field-label">Gallery photos (optional, multiple)</span>
+      <label class="image-picker" id="galleryPickerLabel">
+        <span>🖼️ Add gallery photos</span>
+        <input type="file" id="postGalleryInput" accept="image/*" multiple style="display:none;">
+      </label>
+      <div id="galleryPreviewWrap" class="gallery-thumbs"></div>
+
+      <button class="btn-primary" id="publishBtn" style="width:100%; margin-top:10px;">Publish</button>
     </div>
 
     <!-- DETAIL VIEW -->
     <div id="detailView" class="hidden">
       <div class="detail-top">
         <button class="btn-ghost" id="backFromDetailBtn">← Back</button>
+        <button class="delete-btn hidden" id="deleteFromDetailBtn">Delete</button>
       </div>
       <div class="detail" id="detailContent"></div>
+      <div id="relatedWrap"></div>
+      <div class="comments-section" id="commentsSection"></div>
+    </div>
+
+    <!-- ABOUT VIEW -->
+    <div id="aboutView" class="page-section hidden">
+      <h2>About</h2>
+      <p id="aboutText" contenteditable="true" spellcheck="false">Smruti Ranjan Tripathy writes here in English, Hindi and Odia — on work, family, money, and the small things worth remembering.</p>
+    </div>
+
+    <!-- SUPPORT / DONATE VIEW -->
+    <div id="supportView" class="page-section hidden">
+      <h2>Support this journal</h2>
+      <p>If something you read here was worth your time, you're welcome to leave a small tip. It costs nothing to just keep reading, always.</p>
+      <div class="support-card">
+        <h3>Buy me a chai ☕</h3>
+        <div id="razorpayButtonSlot">
+          <!-- Replace this comment with your Razorpay Payment Button embed code, e.g.:
+          <form>
+            <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="YOUR_BUTTON_ID" async></script>
+          </form>
+          Create a free button at https://dashboard.razorpay.com/app/payment-buttons -->
+          <p style="font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--ink-soft);">
+            Payment button not connected yet — see setup note from Claude.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGIN VIEW -->
+    <div id="loginView" class="page-section hidden">
+      <h2>Author Login</h2>
+      <p style="margin-bottom:18px;">Only the author can publish or edit letters. Everyone else can read and comment freely.</p>
+      <input type="email" id="loginEmail" placeholder="Email" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--leaf-line); margin-bottom:12px; font-family:'Noto Serif', serif;">
+      <input type="password" id="loginPassword" placeholder="Password" style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid var(--leaf-line); margin-bottom:14px; font-family:'Noto Serif', serif;">
+      <button class="btn-primary" id="loginSubmitBtn" style="width:100%;">Log in</button>
     </div>
   </main>
 
-  <!-- WhatsApp Floating Trigger -->
   <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-    <svg viewBox="0 0 32 32" fill="white"><path d="M16.001 3C9.101 3 3.5 8.6 3.5 15.5c0 2.43.71 4.69 1.93 6.6L3 29l7.09-2.37a12.44 12.44 0 0 0 5.9 1.5h.01c6.9 0 12.5-5.6 12.5-12.5S22.9 3 16.001 3zm0 22.7h-.01a10.2 10.2 0 0 1-5.2-1.43l-.37-.22-3.75 1.25 1.26-3.66-.24-.38a10.15 10.15 0 0 1-1.56-5.46c0-5.62 4.58-10.2 10.2-10.2a10.14 10.14 0 0 1 7.21 2.99 10.14 10.14 0 0 1 2.99 7.21c0 5.62-4.58 10.2-10.2 10.2zm5.6-7.64c-.31-.15-1.82-.9-2.1-1-.28-.1-.49-.15-.69.16-.2.3-.79 1-.97 1.2-.18.2-.36.23-.67.08-.31-.16-1.3-.48-2.48-1.53-.92-.82-1.54-1.83-1.72-2.14-.18-.31-.02-.47.13-.63.14-.14.31-.36.46-.54.16-.18.2-.31.31-.51.1-.2.05-.39-.03-.54-.08-.16-.69-1.66-.95-2.28-.25-.6-.5-.52-.69-.53-.18-.01-.39-.01-.6-.01-.2 0-.54.08-.82.39-.28.31-1.08 1.05-1.08 2.56 0 1.51 1.1 2.97 1.26 3.17.15.2 2.17 3.32 5.27 4.65.74.32 1.31.51 1.76.65.74.24 1.41.2 1.94.12.59-.09 1.82-.74 2.08-1.46.26-.72.26-1.33.18-1.46-.08-.13-.28-.2-.59-.35z"/></svg>
+    <svg viewBox="0 0 32 32" fill="white"><path d="M16.001 3C9.101 3 3.5 8.6 3.5 15.5c0 2.43.71 4.69 1.93 6.6L3 29l7.09-2.37a12.44 12.44 0 0 0 5.9 1.5h.01c6.9 0 12.5-5.6 12.5-12.5S22.9 3 16.001 3zm0 22.7h-.01a10.2 10.2 0 0 1-5.2-1.43l-.37-.22-3.75 1.25 1.26-3.66-.24-.38a10.15 10.15 0 0 1-1.56-5.46c0-5.62 4.58-10.2 10.2-10.2a10.14 10.14 0 0 1 7.21 2.99 10.14 10.14 0 0 1 2.99 7.21c0 5.62-4.58 10.2-10.2 10.2z"/></svg>
   </a>
 
-  <!-- Drawer/Sheet -->
   <div class="sheet-overlay" id="sheetOverlay">
     <div class="sheet">
       <h3>Settings</h3>
@@ -329,251 +359,511 @@
   <div class="toast" id="toast"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
-  // --- INTEGRATED DB INITIALIZATION ---
   const SUPABASE_URL = 'https://trtkkgxpyiacmrzuqdwu.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRydGtrZ3hweWlhY21yenVxZHd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3ODExNzksImV4cCI6MjA5OTM1NzE3OX0.NVf2D9NfyaQYbju-QkXH9C79s4p9_YpDoiuj2yz5vqE';    
-  
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const SUPABASE_KEY = 'sb_publishable_9uIL4F4C43nMQ9RUfNBVKg_PBuoe5Ok';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let posts = [];
   let meta = { waNumber: "" };
-  let filter = 'all';
+  let langFilter = 'all';
+  let tagFilter = null;
+  let searchQuery = '';
   let writeLang = 'en';
+  let currentImage = null;
+  let galleryImages = [];
+  let editingPostId = null;
+  let session = null;
+  let currentDetailPost = null;
 
   const $ = (id) => document.getElementById(id);
-  const listView = $('listView'), writeView = $('writeView'), detailView = $('detailView');
-  const entriesList = $('entriesList'), emptyState = $('emptyState'), entryCount = $('entryCount');
+  const views = ['homeView','writeView','detailView','aboutView','supportView','loginView'];
   const toast = $('toast');
 
   function showToast(msg){
     toast.textContent = msg;
     toast.classList.add('show');
-    setTimeout(()=>toast.classList.remove('show'), 1800);
+    setTimeout(()=>toast.classList.remove('show'), 1900);
   }
 
   function view(name){
-    listView.classList.add('hidden');
-    writeView.classList.add('hidden');
-    detailView.classList.add('hidden');
-    if(name==='list') listView.classList.remove('hidden');
-    if(name==='write') writeView.classList.remove('hidden');
-    if(name==='detail') detailView.classList.remove('hidden');
+    views.forEach(v => $(v).classList.add('hidden'));
+    $(name).classList.remove('hidden');
+    document.querySelectorAll('.navlinks [data-nav]').forEach(b=>b.classList.remove('active-nav'));
+    const navBtn = document.querySelector(`[data-nav="${name.replace('View','').toLowerCase()}"]`);
+    if(navBtn) navBtn.classList.add('active-nav');
+    window.scrollTo(0,0);
   }
 
-  function formatDate(ts){
-    return new Date(ts).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
-  }
-  
-  function excerpt(text){
-    const clean = text.trim();
-    return clean.length > 150 ? clean.slice(0,150).trim() + '…' : clean;
-  }
-  
-  function waLink(number){
-    const digits = (number||'').replace(/[^0-9]/g,'');
-    return digits ? `https://wa.me/${digits}` : '#';
-  }
-  
-  function shareUrl(post){
-    const text = `AKSHARA · Smruti Ranjan Tripathy\n\n"${post.title}"\n\n${excerpt(post.body)}`;
-    return `https://wa.me/?text=${encodeURIComponent(text)}`;
-  }
-  
   function escapeHtml(str){
     const d = document.createElement('div');
-    d.textContent = str;
+    d.textContent = str || '';
     return d.innerHTML;
   }
+  function formatDate(ts){ return new Date(ts).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }); }
+  function excerpt(text){ const c=(text||'').trim(); return c.length>150 ? c.slice(0,150).trim()+'…' : c; }
+  function waLink(number){ const d=(number||'').replace(/[^0-9]/g,''); return d ? `https://wa.me/${d}` : '#'; }
+  function readingTime(text){ const words=(text||'').trim().split(/\s+/).length; return Math.max(1, Math.round(words/200)); }
+  function langClass(l){ return l==='or' ? 'lang-or' : (l==='hi' ? 'lang-hi' : ''); }
+  function langLabel(l){ return l==='or' ? 'ଓଡ଼ିଆ' : (l==='hi' ? 'HINDI' : 'ENGLISH'); }
 
+  function shareUrls(post){
+    const text = `AKSHARA · Smruti Ranjan Tripathy\n\n"${post.title}"\n\n${excerpt(post.body)}`;
+    const pageUrl = window.location.href.split('#')[0];
+    return {
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(text + '\n' + pageUrl)}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(pageUrl)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`
+    };
+  }
+
+  function videoEmbedSrc(url){
+    if(!url) return null;
+    try{
+      const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{6,})/);
+      if(yt) return `https://www.youtube.com/embed/${yt[1]}`;
+      const vim = url.match(/vimeo\.com\/(\d+)/);
+      if(vim) return `https://player.vimeo.com/video/${vim[1]}`;
+    }catch(e){}
+    return null;
+  }
+
+  // ---------- DATA LOADING ----------
   async function loadAll(){
-    try {
-      let { data, error } = await supabaseClient
-        .from('letters')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      if (error) throw error;
-      posts = data.map(p => ({
-        id: p.id,
-        title: p.title,
-        body: p.body,
-        lang: p.lang,
-        createdAt: new Date(p.created_at).getTime()
-      })) || [];
-    } catch(e) {
-      console.error(e);
-      posts = [];
-    }
-
-    const localMeta = localStorage.getItem('akshara-local-meta');
-    if(localMeta) meta = JSON.parse(localMeta);
+    try{
+      const { data } = await db.from('site_meta').select('*').eq('id','main').single();
+      if(data){
+        meta = { waNumber:data.wa_number||'', brandTitle:data.brand_title||'', authorName:data.author_name||'', tagline:data.tagline||'', aboutText:data.about_text||'' };
+      }
+    }catch(e){}
+    try{
+      const { data } = await db.from('posts').select('*').order('created_at', { ascending:false });
+      if(data) posts = data.map(r=>({ id:r.id, title:r.title, body:r.body, lang:r.lang, image:r.image, gallery:r.gallery||[], video_url:r.video_url, tags:r.tags||[], views:r.views||0, createdAt:r.created_at }));
+    }catch(e){ posts = []; }
 
     $('waNumberInput').value = meta.waNumber || '';
     $('waFloat').href = waLink(meta.waNumber);
+    if(meta.brandTitle) $('brandTitle').textContent = meta.brandTitle;
+    if(meta.authorName) $('authorName').textContent = meta.authorName;
+    if(meta.tagline) $('tagline').textContent = meta.tagline;
+    if(meta.aboutText) $('aboutText').textContent = meta.aboutText;
+
+    renderTagFilters();
     renderList();
   }
 
-  function renderList(){
-    entriesList.innerHTML = '';
-    const visible = posts.filter(p => filter==='all' || p.lang===filter);
-    
-    if(visible.length === 0){
-      emptyState.classList.remove('hidden');
-      entryCount.textContent = `${posts.length} entries`;
-      return;
-    }
-    
-    emptyState.classList.add('hidden');
-    entryCount.textContent = `${posts.length} entries`;
-
-    visible.forEach((post)=>{
-      const isOr = post.lang === 'or';
-      const card = document.createElement('div');
-      card.className = 'entry';
-      card.innerHTML = `
-        <div class="entry-meta">
-          <span class="lang-tag ${isOr?'or':''}">${isOr?'ଓଡ଼ିଆ':'ENGLISH'}</span>
-          <span>${formatDate(post.createdAt)}</span>
-        </div>
-        <h2 class="${isOr?'lang-or':''}">${escapeHtml(post.title)}</h2>
-        <p class="${isOr?'lang-or':''}">${escapeHtml(excerpt(post.body))}</p>
-        <div class="entry-actions">
-          <button class="btn-ghost read-btn" data-id="${post.id}">Read →</button>
-          <a class="share-btn" href="${shareUrl(post)}" target="_blank" rel="noopener">
-            Share
-          </a>
-          <button class="delete-btn" data-id="${post.id}">Delete</button>
-        </div>
-      `;
-      entriesList.appendChild(card);
-    });
-
-    entriesList.querySelectorAll('.read-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>openDetail(btn.dataset.id));
-    });
-    entriesList.querySelectorAll('.delete-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>deletePost(btn.dataset.id));
-    });
+  async function saveMeta(){
+    try{
+      await db.from('site_meta').update({
+        wa_number: meta.waNumber||null, brand_title: meta.brandTitle||null,
+        author_name: meta.authorName||null, tagline: meta.tagline||null, about_text: meta.aboutText||null
+      }).eq('id','main');
+    }catch(e){ showToast("Couldn't save settings"); }
+    $('waFloat').href = waLink(meta.waNumber);
   }
 
-  function openDetail(id){
-    const post = posts.find(p=>p.id==id);
-    if(!post) return;
-    const isOr = post.lang === 'or';
-    $('detailContent').innerHTML = `
-      <div class="entry-meta">
-        <span class="lang-tag ${isOr?'or':''}">${isOr?'ଓଡ଼ିଆ':'ENGLISH'}</span>
-        <span>${formatDate(post.createdAt)}</span>
-      </div>
-      <h2 class="${isOr?'lang-or':''}">${escapeHtml(post.title)}</h2>
-      <p class="${isOr?'lang-or':''}">${escapeHtml(post.body)}</p>
-      <a class="share-btn" href="${shareUrl(post)}" target="_blank" rel="noopener">
-        Share on WhatsApp
-      </a>
-    `;
-    view('detail');
+  // ---------- AUTH ----------
+  async function refreshSession(){
+    const { data } = await db.auth.getSession();
+    session = data.session;
+    updateAuthUI();
   }
-
-  async function deletePost(id){
-    const password = prompt("Enter Admin Password to Delete:");
-    if(password !== "12345") { 
-      alert("Unauthorized!");
-      return;
-    }
-
-    const { error } = await supabaseClient.from('letters').delete().eq('id', id);
-    if(error) {
-      showToast("Error deleting");
-    } else {
-      posts = posts.filter(p=>p.id!=id);
-      renderList();
-      showToast('Entry deleted');
-    }
+  function updateAuthUI(){
+    const loggedIn = !!session;
+    $('loginNavBtn').classList.toggle('hidden', loggedIn);
+    $('writeNavBtn').classList.toggle('hidden', !loggedIn);
+    $('logoutBtn').classList.toggle('hidden', !loggedIn);
+    renderList();
+    if(currentDetailPost) openDetail(currentDetailPost.id);
   }
+  $('loginSubmitBtn').addEventListener('click', async ()=>{
+    const email = $('loginEmail').value.trim();
+    const password = $('loginPassword').value;
+    if(!email || !password){ showToast('Enter email and password'); return; }
+    try{
+      const { error } = await db.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      await refreshSession();
+      showToast('Welcome back');
+      view('homeView');
+    }catch(e){ showToast('Login failed — check email/password'); }
+  });
+  $('logoutBtn').addEventListener('click', async ()=>{
+    await db.auth.signOut();
+    await refreshSession();
+    view('homeView');
+    showToast('Logged out');
+  });
 
-  document.querySelectorAll('.pill').forEach(pill=>{
-    pill.addEventListener('click', ()=>{
-      document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
-      pill.classList.add('active');
-      filter = pill.dataset.filter;
+  // ---------- NAV ----------
+  document.querySelectorAll('[data-nav]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const target = btn.dataset.nav;
+      if(target==='login'){ view('loginView'); return; }
+      if(target==='home'){ view('homeView'); return; }
+      if(target==='about'){ view('aboutView'); return; }
+      if(target==='support'){ view('supportView'); return; }
+    });
+  });
+  $('writeNavBtn').addEventListener('click', ()=>{ resetWriteForm(); view('writeView'); });
+
+  // ---------- FILTERS / SEARCH ----------
+  $('searchInput').addEventListener('input', (e)=>{ searchQuery = e.target.value.toLowerCase(); renderList(); });
+  document.querySelectorAll('[data-filter-type="lang"]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-filter-type="lang"]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      langFilter = btn.dataset.filter;
       renderList();
     });
   });
+  function renderTagFilters(){
+    const allTags = [...new Set(posts.flatMap(p=>p.tags||[]))];
+    const row = $('tagFilterRow');
+    row.innerHTML = '';
+    allTags.forEach(tag=>{
+      const b = document.createElement('button');
+      b.className = 'pill' + (tagFilter===tag ? ' active' : '');
+      b.textContent = '#'+tag;
+      b.addEventListener('click', ()=>{ tagFilter = (tagFilter===tag) ? null : tag; renderTagFilters(); renderList(); });
+      row.appendChild(b);
+    });
+  }
+
+  // ---------- RENDER LIST ----------
+  function renderList(){
+    const list = $('entriesList');
+    list.innerHTML = '';
+    let visible = posts.filter(p => langFilter==='all' || p.lang===langFilter);
+    if(tagFilter) visible = visible.filter(p => (p.tags||[]).includes(tagFilter));
+    if(searchQuery) visible = visible.filter(p => (p.title||'').toLowerCase().includes(searchQuery) || (p.body||'').toLowerCase().includes(searchQuery));
+
+    $('entryCount').textContent = `${posts.length} ${posts.length===1?'entry':'entries'}`;
+    if(visible.length === 0){ $('emptyState').classList.remove('hidden'); return; }
+    $('emptyState').classList.add('hidden');
+
+    visible.forEach(post=>{
+      const card = document.createElement('div');
+      card.className = 'entry';
+      const urls = shareUrls(post);
+      card.innerHTML = `
+        <div class="entry-meta">
+          <span class="lang-tag ${post.lang}">${langLabel(post.lang)}</span>
+          <span>${formatDate(post.createdAt)} · ${readingTime(post.body)} min read · ${post.views||0} views</span>
+        </div>
+        ${post.image ? `<img class="entry-image" src="${post.image}" alt="">` : ''}
+        <h2 class="${langClass(post.lang)}">${escapeHtml(post.title)}</h2>
+        <p class="excerpt ${langClass(post.lang)}">${escapeHtml(excerpt(post.body))}</p>
+        ${(post.tags&&post.tags.length) ? `<div class="tags-row">${post.tags.map(t=>`<span class="tag-chip">#${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+        <div class="entry-actions">
+          <button class="btn-ghost read-btn" data-id="${post.id}">Read →</button>
+          <a class="share-btn" href="${urls.whatsapp}" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="share-btn twitter" href="${urls.twitter}" target="_blank" rel="noopener">X</a>
+          <a class="share-btn fb" href="${urls.facebook}" target="_blank" rel="noopener">FB</a>
+          ${session ? `<button class="delete-btn" data-id="${post.id}">Delete</button>` : ''}
+        </div>
+      `;
+      list.appendChild(card);
+    });
+    list.querySelectorAll('.read-btn').forEach(b=>b.addEventListener('click', ()=>openDetail(b.dataset.id)));
+    list.querySelectorAll('.delete-btn').forEach(b=>b.addEventListener('click', ()=>deletePost(b.dataset.id)));
+  }
+
+  // ---------- DETAIL ----------
+  async function openDetail(id){
+    const post = posts.find(p=>p.id===id);
+    if(!post) return;
+    currentDetailPost = post;
+    const urls = shareUrls(post);
+    const vidSrc = videoEmbedSrc(post.video_url);
+    $('detailContent').innerHTML = `
+      <div class="entry-meta">
+        <span class="lang-tag ${post.lang}">${langLabel(post.lang)}</span>
+        <span class="reading-time">${formatDate(post.createdAt)} · ${readingTime(post.body)} min read · ${post.views||0} views</span>
+      </div>
+      <h2 class="${langClass(post.lang)}">${escapeHtml(post.title)}</h2>
+      ${post.image ? `<img class="detail-image" src="${post.image}" alt="">` : ''}
+      ${vidSrc ? `<div class="video-embed"><iframe src="${vidSrc}" allowfullscreen loading="lazy"></iframe></div>` : ''}
+      <p class="body ${langClass(post.lang)}">${escapeHtml(post.body)}</p>
+      ${(post.gallery&&post.gallery.length) ? `<div class="gallery-grid">${post.gallery.map(g=>`<img src="${g}" alt="">`).join('')}</div>` : ''}
+      ${(post.tags&&post.tags.length) ? `<div class="tags-row">${post.tags.map(t=>`<span class="tag-chip">#${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+      <div class="entry-actions" style="margin-top:14px;">
+        <a class="share-btn" href="${urls.whatsapp}" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="share-btn twitter" href="${urls.twitter}" target="_blank" rel="noopener">X</a>
+        <a class="share-btn fb" href="${urls.facebook}" target="_blank" rel="noopener">Facebook</a>
+        <button class="share-btn copy" id="copyLinkBtn">Copy Link</button>
+      </div>
+    `;
+    $('copyLinkBtn').addEventListener('click', ()=>{
+      navigator.clipboard.writeText(window.location.href.split('#')[0]).then(()=>showToast('Link copied'));
+    });
+    $('deleteFromDetailBtn').classList.toggle('hidden', !session);
+    $('deleteFromDetailBtn').onclick = ()=>{ deletePost(post.id); view('homeView'); };
+
+    renderRelated(post);
+    renderComments(post.id);
+    view('detailView');
+    incrementViews(post);
+  }
+
+  async function incrementViews(post){
+    post.views = (post.views||0) + 1;
+    try{ await db.from('posts').update({ views: post.views }).eq('id', post.id); }catch(e){}
+  }
+
+  function renderRelated(post){
+    const related = posts.filter(p=>p.id!==post.id && (p.lang===post.lang || (p.tags||[]).some(t=>(post.tags||[]).includes(t)))).slice(0,4);
+    const wrap = $('relatedWrap');
+    if(related.length===0){ wrap.innerHTML=''; return; }
+    wrap.innerHTML = `
+      <div class="related-title">More letters</div>
+      <div class="related-list">
+        ${related.map(r=>`<div class="related-card" data-id="${r.id}"><h4 class="${langClass(r.lang)}">${escapeHtml(r.title)}</h4><span class="reading-time">${formatDate(r.createdAt)}</span></div>`).join('')}
+      </div>
+    `;
+    wrap.querySelectorAll('.related-card').forEach(c=>c.addEventListener('click', ()=>openDetail(c.dataset.id)));
+  }
+
+  async function deletePost(id){
+    if(!session){ showToast('Log in as author to delete'); return; }
+    posts = posts.filter(p=>p.id!==id);
+    renderList();
+    try{ await db.from('posts').delete().eq('id', id); showToast('Entry deleted'); }
+    catch(e){ showToast("Couldn't delete on the server"); }
+  }
+
+  // ---------- COMMENTS ----------
+  async function renderComments(postId){
+    const section = $('commentsSection');
+    section.innerHTML = `<h3>Comments</h3>
+      <div class="comment-form">
+        <input type="text" id="commentName" placeholder="Your name">
+        <input type="text" class="honeypot" id="commentHoneypot" tabindex="-1" autocomplete="off">
+        <textarea id="commentBody" placeholder="Share your thoughts..."></textarea>
+        <button class="btn-primary" id="submitCommentBtn">Post comment</button>
+      </div>
+      <div id="commentsList"></div>`;
+
+    let comments = [];
+    try{
+      const { data } = await db.from('comments').select('*').eq('post_id', postId).order('created_at', { ascending:true });
+      if(data) comments = data;
+    }catch(e){}
+
+    function draw(){
+      const list = $('commentsList');
+      const top = comments.filter(c=>!c.parent_id);
+      if(top.length===0){ list.innerHTML = `<p style="font-size:0.85rem; color:var(--ink-soft);">No comments yet — be the first to write one.</p>`; return; }
+      list.innerHTML = top.map(c=>renderCommentHtml(c, comments)).join('');
+      list.querySelectorAll('.like-btn').forEach(b=>b.addEventListener('click', ()=>likeComment(b.dataset.id, comments, draw)));
+      list.querySelectorAll('.reply-toggle').forEach(b=>b.addEventListener('click', ()=>{
+        const f = list.querySelector(`#replyform-${b.dataset.id}`);
+        f.classList.toggle('hidden');
+      }));
+      list.querySelectorAll('.submit-reply').forEach(b=>b.addEventListener('click', ()=>submitComment(postId, b.dataset.id, comments, draw)));
+    }
+    draw();
+
+    $('submitCommentBtn').addEventListener('click', ()=>submitComment(postId, null, comments, draw));
+  }
+
+  function renderCommentHtml(c, all){
+    const replies = all.filter(r=>r.parent_id===c.id);
+    return `
+      <div class="comment">
+        <div class="comment-meta"><span>${escapeHtml(c.name)}</span><span>${formatDate(c.created_at)}</span></div>
+        <p>${escapeHtml(c.body)}</p>
+        <div class="comment-actions">
+          <button class="like-btn" data-id="${c.id}">♥ ${c.likes||0}</button>
+          <button class="reply-toggle" data-id="${c.id}">Reply</button>
+        </div>
+        <div class="reply-form hidden" id="replyform-${c.id}">
+          <input type="text" id="replyname-${c.id}" placeholder="Your name" style="width:100%; margin-bottom:8px; padding:9px 12px; border-radius:8px; border:1px solid var(--leaf-line);">
+          <textarea id="replybody-${c.id}" placeholder="Write a reply..." style="width:100%; min-height:60px; margin-bottom:8px; padding:9px 12px; border-radius:8px; border:1px solid var(--leaf-line);"></textarea>
+          <button class="btn-primary submit-reply" data-id="${c.id}" style="font-size:0.8rem; padding:9px 16px;">Reply</button>
+        </div>
+        ${replies.map(r=>`
+          <div class="comment reply">
+            <div class="comment-meta"><span>${escapeHtml(r.name)}</span><span>${formatDate(r.created_at)}</span></div>
+            <p>${escapeHtml(r.body)}</p>
+            <div class="comment-actions"><button class="like-btn" data-id="${r.id}">♥ ${r.likes||0}</button></div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  async function submitComment(postId, parentId, comments, draw){
+    if($('commentHoneypot') && $('commentHoneypot').value){ return; } // bot caught
+    let name, body;
+    if(parentId){
+      name = $(`replyname-${parentId}`).value.trim();
+      body = $(`replybody-${parentId}`).value.trim();
+    }else{
+      name = $('commentName').value.trim();
+      body = $('commentBody').value.trim();
+    }
+    if(!name || !body){ showToast('Add your name and a comment'); return; }
+    const newComment = { id:'c_'+Date.now(), post_id:postId, parent_id:parentId, name, body, likes:0, created_at:Date.now() };
+    try{
+      await db.from('comments').insert([newComment]);
+      comments.push(newComment);
+      if(parentId){ $(`replybody-${parentId}`).value=''; $(`replyname-${parentId}`).value=''; }
+      else{ $('commentBody').value=''; $('commentName').value=''; }
+      draw();
+      showToast('Comment posted');
+    }catch(e){ showToast("Couldn't post comment"); }
+  }
+
+  async function likeComment(id, comments, draw){
+    const c = comments.find(x=>x.id===id);
+    if(!c) return;
+    c.likes = (c.likes||0) + 1;
+    draw();
+    try{ await db.from('comments').update({ likes: c.likes }).eq('id', id); }catch(e){}
+  }
+
+  // ---------- WRITE / PUBLISH ----------
+  function resetWriteForm(){
+    editingPostId = null;
+    $('writeHeading').textContent = 'New letter';
+    $('postTitleInput').value=''; $('postBodyInput').value=''; $('postTagsInput').value=''; $('postVideoInput').value='';
+    $('postImageInput').value=''; $('postGalleryInput').value='';
+    currentImage = null; galleryImages = [];
+    $('imagePreviewWrap').classList.add('hidden'); $('imagePickerLabel').classList.remove('hidden');
+    $('galleryPreviewWrap').innerHTML = '';
+    writeLang = 'en';
+    document.querySelectorAll('.lang-choice').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.lang-choice[data-lang="en"]').classList.add('active');
+  }
+  $('cancelWriteBtn').addEventListener('click', ()=>view('homeView'));
 
   document.querySelectorAll('.lang-choice').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.querySelectorAll('.lang-choice').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
       writeLang = btn.dataset.lang;
-      
-      const titleEl = $('postTitleInput'), bodyEl = $('postBodyInput');
-      if(writeLang==='or') {
-        titleEl.style.fontFamily = "'Noto Serif Oriya', serif";
-        bodyEl.style.fontFamily = "'Noto Serif Oriya', serif";
-        titleEl.placeholder = 'ଶୀର୍ଷକ';
-        bodyEl.placeholder = 'ଆପଣଙ୍କ ମନରେ ଥିବା କଥା ଲେଖନ୍ତୁ...';
-      } else {
-        titleEl.style.fontFamily = "'Cormorant Garamond', serif";
-        bodyEl.style.fontFamily = "'Noto Serif', serif";
-        titleEl.placeholder = 'Title';
-        bodyEl.placeholder = "Write what's on your mind...";
-      }
+      const titleEl=$('postTitleInput'), bodyEl=$('postBodyInput');
+      const fam = writeLang==='or' ? "'Noto Serif Oriya', serif" : (writeLang==='hi' ? "'Noto Serif Devanagari', serif" : "'Noto Serif', serif");
+      titleEl.style.fontFamily = fam; bodyEl.style.fontFamily = fam;
     });
   });
 
-  $('newEntryBtn').addEventListener('click', ()=>{
-    $('postTitleInput').value = '';
-    $('postBodyInput').value = '';
-    view('write');
-  });
-  
-  $('cancelWriteBtn').addEventListener('click', ()=>view('list'));
-  $('backFromDetailBtn').addEventListener('click', ()=>view('list'));
-
-  $('publishBtn').addEventListener('click', async ()=>{
-    const title = $('postTitleInput').value.trim();
-    const body = $('postBodyInput').value.trim();
-    if(!title || !body){ showToast(writeLang==='or' ? 'ଶୀର୍ଷକ ଓ କିଛି ଧାଡି ଲେଖନ୍ତୁ' : 'Add a title and content first'); return; }
-    
-    const password = prompt("Enter Admin Password to Publish:");
-    if(password !== "12345") { 
-      alert("Wrong password!");
-      return;
-    }
-
-    // --- UPDATED SUPABASE WITH .SELECT() TO PREVENT WRITE CRASH ---
-    const { data, error } = await supabaseClient
-      .from('letters')
-      .insert([{ title, body, lang: writeLang }])
-      .select();
-
-    if(error) {
-      showToast("Error saving to database");
-      console.error(error);
-    } else {
-      await loadAll();
-      view('list');
-      showToast(writeLang==='or' ? 'ପ୍ରକାଶିତ' : 'Published');
-    }
-  });
-
-  $('settingsBtn').addEventListener('click', ()=> $('sheetOverlay').classList.add('open'));
-  $('closeSettingsBtn').addEventListener('click', ()=> $('sheetOverlay').classList.remove('open'));
-  
-  $('saveSettingsBtn').addEventListener('click', AppSaveSettings);
-  
-  function AppSaveSettings(){
-    meta.waNumber = $('waNumberInput').value.trim();
-    localStorage.setItem('akshara-local-meta', JSON.stringify(meta));
-    $('waFloat').href = waLink(meta.waNumber);
-    $('sheetOverlay').classList.remove('open');
-    showToast('Settings saved');
+  function resizeImage(file, maxWidth){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onerror = ()=>reject(new Error('read failed'));
+      reader.onload = (e)=>{
+        const img = new Image();
+        img.onerror = ()=>reject(new Error('load failed'));
+        img.onload = ()=>{
+          const scale = Math.min(1, maxWidth/img.width);
+          const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
+          const canvas = document.createElement('canvas');
+          canvas.width=w; canvas.height=h;
+          canvas.getContext('2d').drawImage(img,0,0,w,h);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
-  // Self Initialization
-  loadAll();
+  $('postImageInput').addEventListener('change', async (e)=>{
+    const file = e.target.files[0]; if(!file) return;
+    try{
+      currentImage = await resizeImage(file, 1200);
+      $('imagePreview').src = currentImage;
+      $('imagePreviewWrap').classList.remove('hidden');
+      $('imagePickerLabel').classList.add('hidden');
+    }catch(err){ showToast("Couldn't load that photo"); }
+  });
+  $('removeImageBtn').addEventListener('click', ()=>{
+    currentImage=null; $('postImageInput').value='';
+    $('imagePreviewWrap').classList.add('hidden'); $('imagePickerLabel').classList.remove('hidden');
+  });
+
+  $('postGalleryInput').addEventListener('change', async (e)=>{
+    const files = Array.from(e.target.files);
+    for(const f of files){
+      try{
+        const resized = await resizeImage(f, 1000);
+        galleryImages.push(resized);
+      }catch(err){}
+    }
+    renderGalleryPreview();
+  });
+  function renderGalleryPreview(){
+    $('galleryPreviewWrap').innerHTML = galleryImages.map((g,i)=>`<img src="${g}" alt="">`).join('');
+  }
+
+  $('publishBtn').addEventListener('click', async ()=>{
+    if(!session){ showToast('Log in as author to publish'); return; }
+    const title = $('postTitleInput').value.trim();
+    const body = $('postBodyInput').value.trim();
+    const tags = $('postTagsInput').value.split(',').map(t=>t.trim()).filter(Boolean);
+    const videoUrl = $('postVideoInput').value.trim();
+    if(!title || !body){ showToast('Add a title and some content first'); return; }
+    const newPost = {
+      id: 'p_'+Date.now(), title, body, lang: writeLang, image: currentImage,
+      gallery: galleryImages, video_url: videoUrl || null, tags, views:0, createdAt: Date.now()
+    };
+    try{
+      const { error } = await db.from('posts').insert([{
+        id:newPost.id, title:newPost.title, body:newPost.body, lang:newPost.lang,
+        image:newPost.image, gallery:newPost.gallery, video_url:newPost.video_url,
+        tags:newPost.tags, views:0, created_at:newPost.createdAt
+      }]);
+      if(error) throw error;
+      posts.unshift(newPost);
+      renderTagFilters();
+      renderList();
+      view('homeView');
+      showToast('Published');
+    }catch(e){ showToast("Couldn't publish — check your connection"); }
+  });
+
+  // ---------- SETTINGS ----------
+  $('settingsBtn').addEventListener('click', ()=> $('sheetOverlay').classList.add('open'));
+  $('closeSettingsBtn').addEventListener('click', ()=> $('sheetOverlay').classList.remove('open'));
+  $('sheetOverlay').addEventListener('click', (e)=>{ if(e.target.id==='sheetOverlay') $('sheetOverlay').classList.remove('open'); });
+  $('saveSettingsBtn').addEventListener('click', async ()=>{
+    meta.waNumber = $('waNumberInput').value.trim();
+    await saveMeta();
+    $('sheetOverlay').classList.remove('open');
+    showToast('Settings saved');
+  });
+
+  ['brandTitle','authorName','tagline','aboutText'].forEach(id=>{
+    $(id).addEventListener('blur', async ()=>{
+      if(!session) return; // only author's edits get saved
+      meta.brandTitle = $('brandTitle').textContent.trim();
+      meta.authorName = $('authorName').textContent.trim();
+      meta.tagline = $('tagline').textContent.trim();
+      meta.aboutText = $('aboutText').textContent.trim();
+      await saveMeta();
+    });
+  });
+
+  // ---------- NEWSLETTER ----------
+  $('newsletterBtn').addEventListener('click', async ()=>{
+    const email = $('newsletterEmail').value.trim();
+    if(!email || !email.includes('@')){ showToast('Enter a valid email'); return; }
+    try{
+      await db.from('subscribers').insert([{ email, created_at: Date.now() }]);
+      $('newsletterEmail').value='';
+      showToast('Subscribed — thank you!');
+    }catch(e){ showToast('Already subscribed or something went wrong'); }
+  });
+
+  // ---------- INIT ----------
+  (async ()=>{
+    await refreshSession();
+    await loadAll();
+  })();
 })();
 </script>
 </body>
