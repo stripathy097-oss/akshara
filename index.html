@@ -823,7 +823,10 @@
       renderList();
       view('homeView');
       showToast('Published');
-    }catch(e){ showToast("Couldn't publish — check your connection"); }
+    }catch(e){
+      console.error('Publish failed:', e);
+      showToast("Couldn't publish — check your connection");
+    }
   });
 
   // ---------- SETTINGS ----------
